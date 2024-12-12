@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:sqlserver://${JDBC_ENV}
-    username: alfa
-    password: admin12345
+    username: ${USER_ENV}
+    password: ${PASS_ENV}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   jpa:
     hibernate:
