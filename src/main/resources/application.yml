@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://${JDBC_ENV}
+    username: alfa
+    password: admin12345
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+
