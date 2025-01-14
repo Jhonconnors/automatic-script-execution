@@ -1,9 +1,15 @@
 package com.example.service;
 
+
 import com.example.entity.LogError;
 import com.example.exception.InvalidScriptException;
+import com.example.repository.previous.PreviousLogRepository;
+import com.example.repository.production.ProductionLogRepository;
 import jakarta.persistence.EntityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,20 +21,42 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ScriptService {
+public class ScriptExecutorService {
+
+    private Logger logger = LoggerFactory.getLogger(ScriptExecutorService.class);
 
     @Autowired
-    private EntityManager entityManager;
+    @Qualifier("previousEntityManager")
+    private EntityManager previousEntityManager;
+
+    @Autowired
+    private PreviousLogRepository previousRepository;
+
+    @Autowired
+    private ProductionLogRepository productionRepository;
+
+    @Autowired
+    @Qualifier("productionEntityManager")
+    private EntityManager productionEntityManager;
+
+    public void executeFlow(MultipartFile file){
+        try {
+            previousExecute(file);
+        } catch (InvalidScriptException e){
+            e.printStackTrace();
+        }
+
+    }
 
     @Transactional(rollbackFor = { InvalidScriptException.class })
-    public void executeScript(MultipartFile file) throws InvalidScriptException {
+    public void previousExecute(MultipartFile file) throws InvalidScriptException {
         String script = validateAndReadFile(file);
 
         // Obtener la marca de tiempo actual antes de ejecutar el script
         LocalDateTime executionTime = LocalDateTime.now();
 
         // Ejecutar el script
-        entityManager.createNativeQuery(script).executeUpdate();
+        previousEntityManager.createNativeQuery(script).executeUpdate();
 
         // Pausa de 10 segundos
         try {
@@ -39,12 +67,15 @@ public class ScriptService {
         }
 
         // Verificar log_errores usando JPA con condición WHERE
-        List<LogError> errores = entityManager.createQuery("SELECT e FROM LogError e WHERE e.initDate > :executionTime")
-                .setParameter("executionTime", executionTime)
-                .getResultList();
+        List<LogError> errores = previousRepository.findByInitDateAfter(executionTime);
+        logger.info("El select muestra : {}",errores);
         if (!errores.isEmpty()) {
             throw new InvalidScriptException("Se encontraron errores en la tabla log_errores.");
         }
+    }
+
+    public void productionExecute(MultipartFile file){
+
     }
 
     private String validateAndReadFile(MultipartFile file) throws InvalidScriptException {
@@ -62,4 +93,6 @@ public class ScriptService {
             throw new InvalidScriptException("Error al leer el archivo.", e);
         }
     }
+
+
 }

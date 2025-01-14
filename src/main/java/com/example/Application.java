@@ -6,10 +6,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
-public class ExecuteSqlFileApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ExecuteSqlFileApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }
