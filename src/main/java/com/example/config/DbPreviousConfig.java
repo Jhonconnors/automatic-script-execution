@@ -1,8 +1,5 @@
 package com.example.config;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +40,7 @@ public class DbPreviousConfig {
                 "hibernate.dialect", "org.hibernate.dialect.SQLServerDialect" // Especifica el dialecto
         ));
         // Especifica el proveedor de persistencia (Hibernate)
+        factoryBean.setPersistenceUnitName("dbPrevious");
         factoryBean.setPersistenceProvider(new org.hibernate.jpa.HibernatePersistenceProvider());
         return factoryBean;
     }

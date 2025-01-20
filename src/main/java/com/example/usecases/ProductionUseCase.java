@@ -39,7 +39,7 @@ public class ProductionUseCase implements UseCaseHandler<MultipartFile, Boolean>
     }
 
     @Override
-    @Transactional(rollbackFor = { InvalidScriptException.class })
+    @Transactional(value = "dbProductionTransactionManager", rollbackFor = { InvalidScriptException.class })
     public Boolean execute(MultipartFile request) throws InvalidScriptException {
 
         String script = validateAndReadFile(request);

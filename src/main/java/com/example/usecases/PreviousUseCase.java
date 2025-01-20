@@ -22,7 +22,7 @@ import static com.example.util.UtilsExecute.validateAndReadFile;
 @Order(1)
 public class PreviousUseCase implements UseCaseHandler<MultipartFile, Boolean>{
 
-    private Logger logger = LoggerFactory.getLogger(PreviousUseCase.class);
+    private final Logger logger = LoggerFactory.getLogger(PreviousUseCase.class);
 
     private final LogErrorPreviousRepository logErrorPreviousRepository;
 
@@ -38,7 +38,7 @@ public class PreviousUseCase implements UseCaseHandler<MultipartFile, Boolean>{
 
 
     @Override
-    @Transactional(rollbackFor = { InvalidScriptException.class })
+    @Transactional(value = "dbProductionTransactionManager", rollbackFor = { InvalidScriptException.class })
     public Boolean execute(MultipartFile request) throws InvalidScriptException {
 
         String script = validateAndReadFile(request);
@@ -47,7 +47,11 @@ public class PreviousUseCase implements UseCaseHandler<MultipartFile, Boolean>{
         LocalDateTime executionTime = LocalDateTime.now();
 
         // Ejecutar el script
-        dbPreviousEntityManager.createNativeQuery(script).executeUpdate();
+        try{
+            dbPreviousEntityManager.createNativeQuery(script).executeUpdate();
+        } catch (Exception e){
+            throw new InvalidScriptException(e.getMessage());
+        }
 
         // Pausa de 15 segundos
         pauseWithException(1500);
