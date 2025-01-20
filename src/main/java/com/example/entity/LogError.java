@@ -1,64 +1,71 @@
 package com.example.entity;
-
 import jakarta.persistence.*;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "log_errores")
+@Table(name = "LogError")
+@ToString
 public class LogError {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "IdLogError")
+    private Long idLogError;
 
-    @Column(name = "casuse", nullable = false)
-    private String casuse;
+    @Column(name = "JsonValue", columnDefinition = "nvarchar(max)")
+    private String jsonValue;
 
-    @Column(name = "init_date", nullable = false)
-    private LocalDateTime initDate;
+    @Column(name = "IndExecute")
+    private Boolean indExecute;
 
-    @Column(name = "work_area", nullable = false)
-    private String workArea;
+    @Column(name = "IndProcess")
+    private Boolean indProcess;
 
-    // Constructores
-    public LogError() {}
+    @Column(name = "RegisterDate")
+    private LocalDateTime registerDate;
 
-    public LogError(String casuse, LocalDateTime initDate, String workArea) {
-        this.casuse = casuse;
-        this.initDate = initDate;
-        this.workArea = workArea;
+    // Getters y setters
+    public Long getIdLogError() {
+        return idLogError;
     }
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
+    public void setIdLogError(Long idLogError) {
+        this.idLogError = idLogError;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getJsonValue() {
+        return jsonValue;
     }
 
-    public String getCasuse() {
-        return casuse;
+    public void setJsonValue(String jsonValue) {
+        this.jsonValue = jsonValue;
     }
 
-    public void setCasuse(String casuse) {
-        this.casuse = casuse;
+    public Boolean getIndExecute() {
+        return indExecute;
     }
 
-    public LocalDateTime getInitDate() {
-        return initDate;
+    public void setIndExecute(Boolean indExecute) {
+        this.indExecute = indExecute;
     }
 
-    public void setInitDate(LocalDateTime initDate) {
-        this.initDate = initDate;
+    public Boolean getIndProcess() {
+        return indProcess;
     }
 
-    public String getWorkArea() {
-        return workArea;
+    public void setIndProcess(Boolean indProcess) {
+        this.indProcess = indProcess;
     }
 
-    public void setWorkArea(String workArea) {
-        this.workArea = workArea;
+    public LocalDateTime getRegisterDate() {
+        return registerDate;
     }
+
+    public void setRegisterDate(LocalDateTime registerDate) {
+        this.registerDate = registerDate;
+    }
+
+
 }

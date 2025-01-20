@@ -3,12 +3,13 @@ package com.example.service;
 
 import com.example.entity.LogError;
 import com.example.exception.InvalidScriptException;
-import com.example.repository.previous.PreviousLogRepository;
-import com.example.repository.production.ProductionLogRepository;
+import com.example.repository.previous.LogErrorPreviousRepository;
+import com.example.repository.production.LogErrorProductionRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,19 +26,35 @@ public class ScriptExecutorService {
 
     private Logger logger = LoggerFactory.getLogger(ScriptExecutorService.class);
 
-    @Autowired
-    @Qualifier("previousEntityManager")
-    private EntityManager previousEntityManager;
+    private final LogErrorPreviousRepository logErrorPreviousRepository;
+    private final LogErrorProductionRepository logErrorProductionRepository;
 
-    @Autowired
-    private PreviousLogRepository previousRepository;
+    private final EntityManager dbProductionEntityManager;
 
-    @Autowired
-    private ProductionLogRepository productionRepository;
+    private final EntityManager dbPreviousEntityManager;
 
-    @Autowired
-    @Qualifier("productionEntityManager")
-    private EntityManager productionEntityManager;
+    // Inyección de los EntityManagers específicos para cada DataSource
+    public ScriptExecutorService(
+            LogErrorPreviousRepository logErrorPreviousRepository, LogErrorProductionRepository logErrorProductionRepository,
+            @Qualifier("dbPreviousEntityManager") EntityManager dbPreviousEntityManager,
+            @Qualifier("dbProductionEntityManager") EntityManager dbProductionEntityManager
+
+    ) {
+        this.logErrorPreviousRepository = logErrorPreviousRepository;
+        this.logErrorProductionRepository = logErrorProductionRepository;
+        this.dbPreviousEntityManager = dbPreviousEntityManager;
+        this.dbProductionEntityManager = dbProductionEntityManager;
+    }
+
+    @PostConstruct
+    public void exampleExecute(){
+        List<LogError> logErrorList = logErrorPreviousRepository.findAll();
+        logErrorList.forEach(System.out::println);
+        logErrorList =logErrorProductionRepository.findAll();
+        logErrorList.forEach(System.out::println);
+    }
+
+
 
     public void executeFlow(MultipartFile file){
         try {
@@ -56,7 +73,7 @@ public class ScriptExecutorService {
         LocalDateTime executionTime = LocalDateTime.now();
 
         // Ejecutar el script
-        previousEntityManager.createNativeQuery(script).executeUpdate();
+        dbPreviousEntityManager.createNativeQuery(script).executeUpdate();
 
         // Pausa de 10 segundos
         try {
@@ -67,7 +84,7 @@ public class ScriptExecutorService {
         }
 
         // Verificar log_errores usando JPA con condición WHERE
-        List<LogError> errores = previousRepository.findByInitDateAfter(executionTime);
+        List<LogError> errores = logErrorPreviousRepository.findByRegisterDateAfter(executionTime);
         logger.info("El select muestra : {}",errores);
         if (!errores.isEmpty()) {
             throw new InvalidScriptException("Se encontraron errores en la tabla log_errores.");

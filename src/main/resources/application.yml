@@ -1,10 +1,13 @@
 spring:
+  output:
+    ansi:
+      enabled: ALWAYS
   datasource:
     db-previous: # Configuración del primer DataSource
-      url: jdbc:mysql://localhost:3306/primary_database
-      username: primary_user
-      password: primary_password
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:sqlserver://${JDBC_PRIMARY_ENV}
+      username: ${PRIMARY_USER}
+      password: ${PRIMARY_PASSWORD}
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
       hikari:
         pool-name: PrimaryHikariPool
         maximum-pool-size: 10
@@ -13,10 +16,10 @@ spring:
         max-lifetime: 600000
         connection-timeout: 30000
     db-production: # Configuración del segundo DataSource
-      url: jdbc:mysql://localhost:3306/secondary_database
-      username: secondary_user
-      password: secondary_password
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:sqlserver://${JDBC_SECONDARY_ENV}
+      username: ${SECONDARY_USER}
+      password: ${SECONDARY_PASSWORD}
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
       hikari:
         pool-name: SecondaryHikariPool
         maximum-pool-size: 10
@@ -33,5 +36,4 @@ jpa:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      dialect: org.hibernate.dialect.MySQLDialect
-
+      dialect: org.hibernate.dialect.SQLServerDialect
