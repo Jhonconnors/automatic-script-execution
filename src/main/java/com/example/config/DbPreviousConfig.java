@@ -2,6 +2,7 @@ package com.example.config;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +55,7 @@ public class DbPreviousConfig {
 
     @Bean(name = "dbPreviousEntityManager")
     @Primary
-    public EntityManager dbPreviousEntityManager(EntityManagerFactory entityManagerFactory) {
+    public EntityManager dbPreviousEntityManager(@Qualifier("dbPreviousEntityManagerFactory")EntityManagerFactory entityManagerFactory) {
         return entityManagerFactory.createEntityManager();
     }
 }

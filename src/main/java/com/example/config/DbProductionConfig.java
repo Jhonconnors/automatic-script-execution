@@ -2,6 +2,7 @@ package com.example.config;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +50,7 @@ public class DbProductionConfig {
     }
 
     @Bean(name = "dbProductionEntityManager")
-    public EntityManager dbProductionEntityManager(EntityManagerFactory entityManagerFactory) {
+    public EntityManager dbProductionEntityManager(@Qualifier("dbProductionEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
         return entityManagerFactory.createEntityManager();
     }
 }

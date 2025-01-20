@@ -8,11 +8,11 @@ import com.example.repository.production.LogErrorProductionRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -56,6 +56,7 @@ public class ScriptExecutorService {
 
 
 
+    @Transactional
     public void executeFlow(MultipartFile file){
         try {
             previousExecute(file);
@@ -65,7 +66,7 @@ public class ScriptExecutorService {
 
     }
 
-    @Transactional(rollbackFor = { InvalidScriptException.class })
+//    @Transactional(rollbackFor = { InvalidScriptException.class })
     public void previousExecute(MultipartFile file) throws InvalidScriptException {
         String script = validateAndReadFile(file);
 
@@ -84,7 +85,7 @@ public class ScriptExecutorService {
         }
 
         // Verificar log_errores usando JPA con condición WHERE
-        List<LogError> errores = logErrorPreviousRepository.findByRegisterDateAfter(executionTime);
+        List<LogError> errores = logErrorProductionRepository.findByRegisterDateAfter(executionTime);
         logger.info("El select muestra : {}",errores);
         if (!errores.isEmpty()) {
             throw new InvalidScriptException("Se encontraron errores en la tabla log_errores.");
