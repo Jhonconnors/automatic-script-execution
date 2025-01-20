@@ -1,6 +1,6 @@
 package com.example.presentation;
 
-import com.example.service.ScriptExecutorService;
+import com.example.service.ScriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ExecuteFileController {
 
     @Autowired
-    private ScriptExecutorService scriptService;
+    private ScriptExecutor scriptService;
 
     @PostMapping("/execute")
     public ResponseEntity<String> executeScript(@RequestParam("file") MultipartFile file) {

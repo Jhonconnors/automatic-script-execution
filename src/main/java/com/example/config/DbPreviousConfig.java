@@ -53,9 +53,4 @@ public class DbPreviousConfig {
         return new JpaTransactionManager(dbPreviousEntityManagerFactory().getObject());
     }
 
-    @Bean(name = "dbPreviousEntityManager")
-    @Primary
-    public EntityManager dbPreviousEntityManager(@Qualifier("dbPreviousEntityManagerFactory")EntityManagerFactory entityManagerFactory) {
-        return entityManagerFactory.createEntityManager();
-    }
 }

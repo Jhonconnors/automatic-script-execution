@@ -49,8 +49,4 @@ public class DbProductionConfig {
         return new JpaTransactionManager(dbProductionEntityManagerFactory().getObject());
     }
 
-    @Bean(name = "dbProductionEntityManager")
-    public EntityManager dbProductionEntityManager(@Qualifier("dbProductionEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
-        return entityManagerFactory.createEntityManager();
-    }
 }
